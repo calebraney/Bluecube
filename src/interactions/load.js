@@ -1,7 +1,8 @@
 import { attr, checkBreakpoints, runSplit } from '../utilities';
 /* CSS in PAGE Head
 
-html:not(.w-editor) [data-ix-load] {
+html:not(.w-editor) [data-ix-load]:not([data-ix-load=""])
+ {
 	opacity: 0;
 }
  html:not(.w-editor) [data-ix-load="stagger"] > * {
@@ -17,6 +18,7 @@ export const load = function (gsapContext) {
   // hero animation selectors
   const HEADING = 'heading';
   const ITEM = 'item';
+  const LINE = 'line';
   const IMAGE = 'image';
   const STAGGER = 'stagger';
   //tween options
@@ -84,8 +86,8 @@ export const load = function (gsapContext) {
   items.forEach((item) => {
     if (!item) return;
     //check breakpoints and quit function if set on specific breakpoints
-    let runOnBreakpoint = checkBreakpoints(item, ANIMATION_ID, gsapContext);
-    if (runOnBreakpoint === false) return;
+    // let runOnBreakpoint = checkBreakpoints(item, ANIMATION_ID, gsapContext);
+    // if (runOnBreakpoint === false) return;
     //find the type of the scrolling animation
     const loadType = item.getAttribute(ATTRIBUTE);
     if (loadType === HEADING) {
@@ -103,7 +105,7 @@ export const load = function (gsapContext) {
   });
 
   //Play interaction on page load
-  tl.play(0);
+  // tl.play(0);
 
   // Alternatively use the returned tl to trigger the interaction after transition or image load
   return tl;
