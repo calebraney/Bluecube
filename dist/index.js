@@ -1200,7 +1200,6 @@
     const ATTRIBUTE = "data-ix-load";
     const HEADING = "heading";
     const ITEM = "item";
-    const LINE = "line";
     const IMAGE = "image";
     const STAGGER = "stagger";
     const POSITION = "data-ix-load-position";
@@ -1262,6 +1261,24 @@
       }
     });
     return tl;
+  };
+
+  // src/interactions/home.js
+  var homeAnimations = function() {
+    const homeWrap = document.querySelector(".home_wrap");
+    const homeScrollWrap = document.querySelector(".home_scroll_wrap");
+    const homeBgWrap = document.querySelector(".home_bg_wrap");
+    const homeBgTopWrap = document.querySelector(".home_bg_top_wrap");
+    const backgroundOverlay = document.querySelector(".home_bg_overlay");
+    if (!homeWrap) {
+      return;
+    }
+    const homeLoad = function() {
+    };
+    homeLoad();
+    const homeScroll = function() {
+    };
+    homeScroll();
   };
 
   // src/index.js
@@ -1682,9 +1699,6 @@
         }
       });
     };
-    passwordFunction();
-    lightbox();
-    dynamicFormInputs();
     const gsapInit = function() {
       let mm = gsap.matchMedia();
       mm.add(
@@ -1697,6 +1711,15 @@
         },
         (gsapContext) => {
           let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
+          const currentUrl = window.location.pathname;
+          console.log(currentUrl);
+          if (currentUrl === "/") {
+            homeAnimations();
+          } else {
+            passwordFunction();
+          }
+          lightbox();
+          dynamicFormInputs();
           linktreeAnimation(isMobile);
           navbarTransparent();
           if (!reduceMotion) {

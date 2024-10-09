@@ -18,7 +18,6 @@ export const load = function (gsapContext) {
   // hero animation selectors
   const HEADING = 'heading';
   const ITEM = 'item';
-  const LINE = 'line';
   const IMAGE = 'image';
   const STAGGER = 'stagger';
   //tween options

@@ -4,6 +4,8 @@ import { scrollIn } from './interactions/scrollIn';
 import { scrolling } from './interactions/scrolling';
 import { parallax } from './interactions/parallax';
 import { load } from './interactions/load';
+import { homeAnimations } from './interactions/home';
+//global exported variables
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
@@ -510,10 +512,6 @@ document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   //Control Functions on page load
 
-  passwordFunction();
-  lightbox();
-  dynamicFormInputs();
-
   const gsapInit = function () {
     let mm = gsap.matchMedia();
     mm.add(
@@ -527,10 +525,20 @@ document.addEventListener('DOMContentLoaded', function () {
       (gsapContext) => {
         let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
         //functional interactions
-        // run animation functions
+        const currentUrl = window.location.pathname;
+        console.log(currentUrl);
+        if (currentUrl === '/') {
+          homeAnimations();
+        } else {
+          passwordFunction();
+        }
+        lightbox();
+        dynamicFormInputs();
+
+        // animation functions
         linktreeAnimation(isMobile);
         navbarTransparent();
-
+        //conditional animations
         if (!reduceMotion) {
           scrollIn(gsapContext);
           scrolling(gsapContext);
