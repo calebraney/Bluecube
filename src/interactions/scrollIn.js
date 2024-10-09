@@ -104,6 +104,7 @@ export const scrollIn = function (gsapContext) {
       right: 'polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)',
       top: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)',
       bottom: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)',
+      full: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
     };
     //check for each possible direction and map it to the correct clipping value
     if (direction === 'left') {

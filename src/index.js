@@ -5,11 +5,13 @@ import { scrolling } from './interactions/scrolling';
 import { parallax } from './interactions/parallax';
 import { load } from './interactions/load';
 import { homeAnimations } from './interactions/home';
+import Lenis from '@studio-freight/lenis';
+
 //global exported variables
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
-  console.log('Local Script');
+  // console.log('Local Script');
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
     gsap.registerPlugin(ScrollTrigger);
@@ -17,6 +19,97 @@ document.addEventListener('DOMContentLoaded', function () {
   if (gsap.Flip !== undefined) {
     gsap.registerPlugin(Flip);
   }
+
+  //////////////////////////////
+  //Lenis
+  const lenis = new Lenis({
+    duration: 1,
+    easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net
+    touchMultiplier: 1.5,
+  });
+  // lenis request animation from
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+  // Keep lenis and scrolltrigger in sync
+  lenis.on('scroll', () => {
+    if (!ScrollTrigger) return;
+    ScrollTrigger.update();
+  });
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+  gsap.ticker.lagSmoothing(0);
+  ////////////////////////////
+  //Control Scrolling
+
+  // anchor links
+  function anchorLinks() {
+    const anchorLinks = document.querySelectorAll('[scroll-to]');
+    if (anchorLinks == null) {
+      return;
+    }
+    anchorLinks.forEach((item) => {
+      const targetID = item.getAttribute('scroll-to');
+      const target = document.getElementById(targetID);
+      if (!target) return;
+      item.addEventListener('click', (event) => {
+        lenis.scrollTo(target, {
+          duration: 1.85,
+          wheelMultiplier: 0.5,
+          easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+        });
+      });
+    });
+  }
+  anchorLinks();
+
+  // stop page scrolling
+  function stopScroll() {
+    const stopScrollLinks = document.querySelectorAll('[scroll="stop"]');
+    if (stopScrollLinks == null) {
+      return;
+    }
+    stopScrollLinks.forEach((item) => {
+      item.addEventListener('click', (event) => {
+        lenis.stop();
+      });
+    });
+  }
+  stopScroll();
+
+  // start page scrolling
+  function startScroll() {
+    const startScrollLinks = document.querySelectorAll('[scroll="start"]');
+    if (startScrollLinks == null) {
+      return;
+    }
+    startScrollLinks.forEach((item) => {
+      item.addEventListener('click', (event) => {
+        lenis.start();
+      });
+    });
+  }
+  startScroll();
+
+  // toggle page scrolling
+  function toggleScroll() {
+    const toggleScrollLinks = document.querySelectorAll('[scroll="toggle"]');
+    if (toggleScrollLinks == null) {
+      return;
+    }
+    toggleScrollLinks.forEach((item) => {
+      let stopScroll = false;
+      item.addEventListener('click', (event) => {
+        stopScroll = !stopScroll;
+        if (stopScroll) lenis.stop();
+        else lenis.start();
+      });
+    });
+  }
+  toggleScroll();
 
   //////////////////////////////
   //Global Variables
@@ -526,7 +619,6 @@ document.addEventListener('DOMContentLoaded', function () {
         let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
         //functional interactions
         const currentUrl = window.location.pathname;
-        console.log(currentUrl);
         if (currentUrl === '/') {
           homeAnimations();
         } else {
