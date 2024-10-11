@@ -1283,13 +1283,15 @@
     const imgBottom = document.querySelector(".home_bg_bottom");
     const imgRightGuy = document.querySelector(".home_bg_right-guy");
     const imgLeftGuy = document.querySelector(".home_bg_left-guy");
-    const imgLady = document.querySelector(".home_bg_lady");
+    const imgLady = document.querySelector(".home_bg_lady-wrap");
+    const imgShoe = document.querySelector(".home_bg_shoe");
     const heroLogo = document.querySelector(".home_hero_logo");
     const heroText = document.querySelector(".home_hero_text");
     const heroScroll = document.querySelector(".home_hero_scroll");
     const heroScrollArrow = document.querySelector(".home_hero_arrow");
     const titleText = document.querySelector(".home_title_text");
     const detailsCards = gsap.utils.toArray(".home-details_card");
+    const detailsHeadings = gsap.utils.toArray(".home-details_heading");
     const artistItems = gsap.utils.toArray(".home_artists_item");
     const taglineItems = gsap.utils.toArray(".home_tagline_text");
     let frameTransform;
@@ -1384,12 +1386,12 @@
           ease: "power1.out"
         }
       }).fromTo(heroText, { yPercent: 0 }, { yPercent: -120 }).fromTo(heroScroll, { opacity: 1 }, { opacity: 0, duration: 0.5 }, "<").fromTo(heroLogo, { yPercent: 0 }, { yPercent: -120 });
-      const titleSplit = runSplit(titleText);
+      const titleSplit = runSplit(titleText, "chars, words, lines");
       gsap.timeline({
         scrollTrigger: {
           trigger: titleSection,
           start: "top bottom",
-          end: "bottom 90%",
+          end: "bottom 20%",
           scrub: true,
           markers: false
         },
@@ -1398,10 +1400,20 @@
           ease: "power1.out"
         }
       }).set(homeBgTopWrap, { opacity: 1 }).fromTo(
-        titleSplit.words,
-        { opacity: 0, yPercent: 25 },
-        { opacity: 1, yPercent: 0, duration: 0.5, stagger: { from: "start", each: 0.1 } }
-      ).fromTo(imgLady, { opacity: 0 }, { opacity: 1, duration: 0.2 }, "<.8").fromTo(imgRightGuy, { opacity: 0 }, { opacity: 1, duration: 0.2 }, "<").fromTo(imgLady, { rotateZ: -25, yPercent: 0 }, { rotateZ: 15, yPercent: -10 }, "<").fromTo(imgRightGuy, { xPercent: 50 }, { xPercent: 0, duration: 0.5 }, "<").to(homeBgTopWrap, { opacity: 0, duration: 0.2 });
+        titleSplit.chars,
+        { opacity: 0, x: "1rem" },
+        { opacity: 1, x: "0rem", duration: 0.5, stagger: { from: "start", each: 0.015 } }
+      ).fromTo(imgLady, { opacity: 0 }, { opacity: 1, duration: 0.1 }, "<.5").fromTo(imgRightGuy, { opacity: 0 }, { opacity: 1, duration: 0.2 }, "<").fromTo(
+        imgLady,
+        { rotateZ: -35, yPercent: 0, xPercent: 0 },
+        { rotateZ: 15, yPercent: -10, xPercent: -25 },
+        "<"
+      ).fromTo(
+        imgShoe,
+        { rotateZ: 0, yPercent: 5, xPercent: 0 },
+        { rotateZ: 45, yPercent: 0, xPercent: -7 },
+        "<"
+      ).fromTo(imgRightGuy, { xPercent: 50 }, { xPercent: 0, duration: 0.5 }, "<").to(homeBgTopWrap, { opacity: 0, duration: 0.1 }, "<.3");
       gsap.timeline({
         scrollTrigger: {
           trigger: detailsSection,
@@ -1414,13 +1426,14 @@
           duration: 1,
           ease: "power1.out"
         }
-      }).fromTo(detailsCards[0], { opacity: 0 }, { opacity: 1, duration: 0.5 }, "<").fromTo(detailsCards[1], { opacity: 0 }, { opacity: 1, duration: 0.5 }, "<").fromTo(detailsCards[2], { opacity: 0 }, { opacity: 1, duration: 0.5 }, "<").fromTo(detailsCards[0], { xPercent: 30 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[1], { xPercent: -50 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[2], { xPercent: 80 }, { xPercent: 0, duration: 1 }, "<").to(backgroundOverlay, { opacity: 0.8, duration: 0.5 }, "<.5");
-      detailsCards.forEach((item, index) => {
+      }).fromTo(detailsCards[0], { xPercent: 30 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[1], { xPercent: -50 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[2], { xPercent: 80 }, { xPercent: 0, duration: 1 }, "<").to(backgroundOverlay, { opacity: 0.8, duration: 0.5 }, "<.2");
+      detailsHeadings.forEach((item, index) => {
+        const headingSplit = runSplit(item, "words, lines");
         gsap.timeline({
           scrollTrigger: {
             trigger: item,
-            start: "top 80px",
-            end: "bottom 80px",
+            start: "top 90%",
+            end: "center top",
             scrub: true,
             markers: false
           },
@@ -1428,7 +1441,15 @@
             duration: 1,
             ease: "none"
           }
-        }).fromTo(item, { clipPath: clipDirections.full }, { clipPath: clipDirections.bottom });
+        }).fromTo(
+          headingSplit.words,
+          { opacity: 0, yPercent: 25 },
+          { opacity: 1, yPercent: 0, duration: 0.5, stagger: { from: "start", each: 0.1 } }
+        ).fromTo(
+          headingSplit.lines,
+          { opacity: 1 },
+          { opacity: 0, duration: 0.5, delay: 1, stagger: { from: "start", each: 0.1 } }
+        );
       });
       const artistTL = gsap.timeline({
         scrollTrigger: {
@@ -1469,12 +1490,27 @@
           duration: 1,
           ease: "power1.out"
         }
-      }).fromTo(taglineItems[0], { opacity: 0 }, { opacity: 1, duration: 0.75 }, "<").fromTo(taglineItems[0], { xPercent: 30 }, { xPercent: 0, duration: 1 }, "<").fromTo(taglineItems[1], { opacity: 0 }, { opacity: 1, duration: 0.75 }, "<.2").fromTo(taglineItems[1], { xPercent: 60 }, { xPercent: 0, duration: 1 }, "<").fromTo(taglineItems[2], { opacity: 0 }, { opacity: 1, duration: 0.75 }, "<.2").fromTo(taglineItems[2], { xPercent: 90 }, { xPercent: 0, duration: 1 }, "<").fromTo(
-        taglineItems,
-        { clipPath: clipDirections.full },
-        { clipPath: clipDirections.top, duration: 0.4 },
-        "<.8"
-      );
+      });
+      taglineItems.forEach((item, index) => {
+        const headingSplit = runSplit(item, "chars, lines");
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: "top 90%",
+            end: "top top",
+            scrub: true,
+            markers: false
+          },
+          defaults: {
+            duration: 1,
+            ease: "none"
+          }
+        }).fromTo(
+          headingSplit.chars,
+          { opacity: 0, yPercent: 10, x: "1.5rem" },
+          { opacity: 1, yPercent: 0, x: "0rem", stagger: { from: "start", each: 0.1 } }
+        ).fromTo(item, { opacity: 1 }, { opacity: 0, duration: 0.5, delay: 1 });
+      });
     };
     homeScroll();
   };
