@@ -4,24 +4,23 @@ import { scrollIn } from './interactions/scrollIn';
 import { scrolling } from './interactions/scrolling';
 import { parallax } from './interactions/parallax';
 import { load } from './interactions/load';
-import { homeScroll, homeLoad } from './interactions/home';
-import Lenis from '@studio-freight/lenis';
+import { homeScroll } from './interactions/home';
 import { pageLoad } from './interactions/pageLoader';
-
-//global exported variables
-//Page load interaction
-pageLoad();
+import Lenis from '@studio-freight/lenis';
 
 document.addEventListener('DOMContentLoaded', function () {
+  //Page load interaction
+  pageLoad();
   // Comment out for production
   // console.log('Local Script');
+
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
     gsap.registerPlugin(ScrollTrigger);
   }
-  if (gsap.Flip !== undefined) {
-    gsap.registerPlugin(Flip);
-  }
+  // if (gsap.Flip !== undefined) {
+  //   gsap.registerPlugin(Flip);
+  // }
 
   //////////////////////////////
   //Lenis
@@ -622,8 +621,18 @@ document.addEventListener('DOMContentLoaded', function () {
         let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
         //functional interactions
         const currentUrl = window.location.pathname;
+        // if homepage
         if (currentUrl === '/') {
+          //home scroll interactions
           homeScroll();
+          // reload on window resize
+          let windowWidth = window.innerWidth;
+          window.addEventListener('resize', function () {
+            if (window.innerWidth !== windowWidth) {
+              location.reload();
+            }
+            // gsapInit();
+          });
         } else {
           passwordFunction();
         }

@@ -1597,6 +1597,7 @@
       }
     });
     tl.play(0);
+    return tl;
   };
 
   // src/interactions/home.js
@@ -1637,26 +1638,6 @@
     bottom: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
     full: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
   };
-  var homeLoad = function() {
-    const tl = gsap.timeline({
-      paused: true,
-      defaults: {
-        ease: "power2.out",
-        duration: 1
-      }
-    }).fromTo(
-      [imgBottom, imgLeft, imgRight, imgLeftGuy],
-      {
-        scale: 1.2
-      },
-      {
-        scale: 1
-      },
-      0
-    );
-    return tl;
-  };
-  homeLoad();
   var homeScroll = function() {
     if (!homeWrap) {
       return;
@@ -1878,6 +1859,118 @@
         { opacity: 1, yPercent: 0, x: "0rem", stagger: { from: "start", each: 0.1 } }
       ).fromTo(item, { opacity: 1 }, { opacity: 0, duration: 0.5, delay: 1 });
     });
+  };
+
+  // src/interactions/pageLoader.js
+  init_live_reload();
+  var import_imagesloaded = __toESM(require_imagesloaded(), 1);
+  var pageLoad = function() {
+    const LOAD_WRAP = ".load_component";
+    const LOAD_LOGO = ".load_logo";
+    const LOAD_LINE = ".load_line-wrap";
+    const LOAD_LINE_FILL = ".load_line";
+    const LOAD_BG = ".load_bg";
+    const MAIN_WRAP = ".main-wrapper";
+    const loadWrap = document.querySelector(LOAD_WRAP);
+    const loadLogo = document.querySelector(LOAD_LOGO);
+    const loadLine = document.querySelector(LOAD_LINE);
+    const loadLineFill = document.querySelector(LOAD_LINE_FILL);
+    const loadBackground = document.querySelector(LOAD_BG);
+    const body = document.querySelector("body");
+    const contentWrap = document.querySelector(MAIN_WRAP);
+    if (!loadWrap || !contentWrap) {
+      return;
+    }
+    const imgRight2 = document.querySelector(".home_bg_right");
+    const imgLeft2 = document.querySelector(".home_bg_left");
+    const imgBottom2 = document.querySelector(".home_bg_bottom");
+    const imgLeftGuy2 = document.querySelector(".home_bg_left-guy");
+    const homeLoad = function() {
+      const tl = gsap.timeline({
+        paused: true,
+        defaults: {
+          ease: "power2.out",
+          duration: 1
+        }
+      }).fromTo(
+        [imgBottom2, imgLeft2, imgRight2, imgLeftGuy2],
+        {
+          scale: 1.2
+        },
+        {
+          scale: 1
+        }
+      );
+      return tl;
+    };
+    homeLoad();
+    const pageLoadAnimation = function() {
+      body.style.overflow = "hidden";
+      const homeHeroAnimation = homeLoad();
+      const tlLoading = gsap.timeline({ paused: true });
+      tlLoading.fromTo(
+        loadLineFill,
+        { width: "0%" },
+        {
+          width: "100%",
+          ease: "linear",
+          duration: 1
+        }
+      );
+      const tlLoaded = gsap.timeline({
+        paused: true,
+        delay: 0.1,
+        onStart: () => {
+          setTimeout(() => {
+            load();
+          }, 600);
+          const currentUrl = window.location.pathname;
+          if (currentUrl === "/") {
+            homeHeroAnimation.play();
+          }
+          ScrollTrigger.refresh();
+        }
+      });
+      tlLoaded.fromTo(
+        [loadLogo, loadLine],
+        { opacity: 1 },
+        {
+          opacity: 0,
+          duration: 0.45
+        }
+      );
+      tlLoaded.fromTo(
+        loadBackground,
+        { y: "0vh", borderRadius: "0vw" },
+        {
+          y: "-100vh",
+          borderRadius: "20vw",
+          ease: "power1.inOut",
+          duration: 1
+        },
+        "<"
+      );
+      tlLoaded.set(loadWrap, { display: "none" });
+      tlLoaded.set("body", { overflow: "visible" });
+      const start = performance.now();
+      const imgLoad = new import_imagesloaded.default("body", { background: true }, onImagesLoaded);
+      const numImages = imgLoad.images.length;
+      imgLoad.on("progress", function(instance, image) {
+        var result = image.isLoaded ? "loaded" : "broken";
+        const progress = instance.progressedCount / numImages;
+        tlLoading.progress(progress);
+      });
+      function onImagesLoaded() {
+        const end = performance.now();
+        const MIN_TIME = 800;
+        const duration = end - start;
+        const remainingTime = Math.max(MIN_TIME - duration, 0);
+        setTimeout(() => {
+          tlLoaded.play();
+        }, remainingTime);
+      }
+    };
+    pageLoadAnimation();
   };
 
   // node_modules/@studio-freight/lenis/dist/lenis.mjs
@@ -2128,109 +2221,11 @@
     }
   };
 
-  // src/interactions/pageLoader.js
-  init_live_reload();
-  var import_imagesloaded = __toESM(require_imagesloaded(), 1);
-  var pageLoad = function() {
-    const LOAD_WRAP = ".load_component";
-    const LOAD_LOGO = ".load_logo";
-    const LOAD_LINE = ".load_line-wrap";
-    const LOAD_LINE_FILL = ".load_line";
-    const LOAD_BG = ".load_bg";
-    const MAIN_WRAP = ".main-wrapper";
-    const ATTRIBUTE = "data-ix-load";
-    const TITLE = "title";
-    const ITEM = "item";
-    const FADE = "fade";
-    const STAGGER = "stagger";
-    const loadWrap = document.querySelector(LOAD_WRAP);
-    const loadLogo = document.querySelector(LOAD_LOGO);
-    const loadLine = document.querySelector(LOAD_LINE);
-    const loadLineFill = document.querySelector(LOAD_LINE_FILL);
-    const loadBackground = document.querySelector(LOAD_BG);
-    const body = document.querySelector("body");
-    const contentWrap = document.querySelector(MAIN_WRAP);
-    if (!loadWrap || !contentWrap) {
-      load();
-      return;
-    }
-    const homeHeroAnimation = homeLoad();
-    const pageLoadAnimation = function() {
-      body.style.overflow = "hidden";
-      const tlLoading = gsap.timeline({ paused: true });
-      tlLoading.fromTo(
-        loadLineFill,
-        { width: "0%" },
-        {
-          width: "100%",
-          ease: "linear",
-          duration: 1
-        }
-      );
-      const tlLoaded = gsap.timeline({
-        paused: true,
-        delay: 0.1,
-        onStart: () => {
-          setTimeout(() => {
-            load();
-          }, 600);
-          const currentUrl = window.location.pathname;
-          if (currentUrl === "/") {
-            homeHeroAnimation.play();
-          }
-          ScrollTrigger.refresh();
-        }
-      });
-      tlLoaded.fromTo(
-        [loadLogo, loadLine],
-        { opacity: 1 },
-        {
-          opacity: 0,
-          duration: 0.45
-        }
-      );
-      tlLoaded.fromTo(
-        loadBackground,
-        { y: "0vh", borderRadius: "0vw" },
-        {
-          y: "-100vh",
-          borderRadius: "20vw",
-          ease: "power1.inOut",
-          duration: 1
-        },
-        "<"
-      );
-      tlLoaded.set(loadWrap, { display: "none" });
-      tlLoaded.set("body", { overflow: "visible" });
-      const start = performance.now();
-      const imgLoad = new import_imagesloaded.default("body", { background: true }, onImagesLoaded);
-      const numImages = imgLoad.images.length;
-      imgLoad.on("progress", function(instance, image) {
-        var result = image.isLoaded ? "loaded" : "broken";
-        const progress = instance.progressedCount / numImages;
-        tlLoading.progress(progress);
-      });
-      function onImagesLoaded() {
-        const end = performance.now();
-        const MIN_TIME = 800;
-        const duration = end - start;
-        const remainingTime = Math.max(MIN_TIME - duration, 0);
-        setTimeout(() => {
-          tlLoaded.play();
-        }, remainingTime);
-      }
-    };
-    pageLoadAnimation();
-  };
-
   // src/index.js
-  pageLoad();
   document.addEventListener("DOMContentLoaded", function() {
+    pageLoad();
     if (gsap.ScrollTrigger !== void 0) {
       gsap.registerPlugin(ScrollTrigger);
-    }
-    if (gsap.Flip !== void 0) {
-      gsap.registerPlugin(Flip);
     }
     const lenis = new Lenis({
       duration: 1,
@@ -2733,6 +2728,12 @@
           const currentUrl = window.location.pathname;
           if (currentUrl === "/") {
             homeScroll();
+            let windowWidth = window.innerWidth;
+            window.addEventListener("resize", function() {
+              if (window.innerWidth !== windowWidth) {
+                location.reload();
+              }
+            });
           } else {
             passwordFunction();
           }

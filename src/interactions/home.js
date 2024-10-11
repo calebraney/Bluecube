@@ -1,4 +1,4 @@
-import { attr, checkBreakpoints, runSplit } from '../utilities';
+import { runSplit } from '../utilities';
 
 //main elements
 const homeWrap = document.querySelector('.home_wrap');
@@ -43,29 +43,6 @@ const clipDirections = {
   bottom: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)',
   full: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
 };
-//home loading interaction
-export const homeLoad = function () {
-  const tl = gsap
-    .timeline({
-      paused: true,
-      defaults: {
-        ease: 'power2.out',
-        duration: 1,
-      },
-    })
-    .fromTo(
-      [imgBottom, imgLeft, imgRight, imgLeftGuy],
-      {
-        scale: 1.2,
-      },
-      {
-        scale: 1,
-      },
-      0
-    );
-  return tl;
-};
-homeLoad();
 
 export const homeScroll = function () {
   ////////////////////

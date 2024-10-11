@@ -1,5 +1,4 @@
 import { attr, runSplit } from '../utilities';
-import { homeLoad } from './home';
 import { load } from './load';
 import imagesLoaded from 'imagesloaded';
 
@@ -10,18 +9,7 @@ export const pageLoad = function () {
   const LOAD_LINE = '.load_line-wrap';
   const LOAD_LINE_FILL = '.load_line';
   const LOAD_BG = '.load_bg';
-
-  //Selectors - Page Elements
   const MAIN_WRAP = '.main-wrapper';
-  // hero animation attribute
-  const ATTRIBUTE = 'data-ix-load';
-  // hero animation selectors
-  const TITLE = 'title';
-  const ITEM = 'item';
-  const FADE = 'fade';
-  const STAGGER = 'stagger';
-
-  //Options
 
   //Get Elements
   const loadWrap = document.querySelector(LOAD_WRAP);
@@ -33,82 +21,47 @@ export const pageLoad = function () {
   const contentWrap = document.querySelector(MAIN_WRAP);
 
   if (!loadWrap || !contentWrap) {
-    load();
+    // load();
     return;
   }
 
-  //animation once page has loaded
-  // const headerLoadInAnimation = function () {
-  //   const items = document.querySelectorAll(`[${ATTRIBUTE}="${ITEM}"]`);
-  //   const fades = document.querySelectorAll(`[${ATTRIBUTE}="${FADE}"]`);
-  //   const staggers = document.querySelectorAll(`[${ATTRIBUTE}="${STAGGER}"]`);
-  //   const title = document.querySelector(`[${ATTRIBUTE}="${TITLE}"]`);
-  //   if (!title || items.length === 0) return;
+  //Background Image Layers
+  const imgRight = document.querySelector('.home_bg_right');
+  const imgLeft = document.querySelector('.home_bg_left');
+  const imgBottom = document.querySelector('.home_bg_bottom');
+  const imgLeftGuy = document.querySelector('.home_bg_left-guy');
 
-  //   const splitText = runSplit(title, 'lines, words, chars');
-  //   if (!splitText) return;
-
-  //   const tl = gsap.timeline({
-  //     paused: false,
-  //     delay: 0.8,
-  //     defaults: {
-  //       ease: 'power1.out',
-  //       duration: 0.6,
-  //     },
-  //   });
-  //   tl.set(title, { opacity: 1 });
-  //   tl.fromTo(title, { scale: 1.2 }, { scale: 1 });
-  //   tl.fromTo(
-  //     splitText.words,
-  //     { opacity: 0 },
-  //     { opacity: 1, stagger: { each: 0.1, from: 'random' } },
-  //     '<'
-  //   );
-  //   if (items.length !== 0) {
-  //     tl.fromTo(
-  //       items,
-  //       { opacity: 0, y: '2rem' },
-  //       { opacity: 1, y: '0rem', stagger: { each: 0.2, from: 'start' } },
-  //       0.3
-  //     );
-  //   }
-  //   if (fades.length !== 0) {
-  //     tl.fromTo(
-  //       fades,
-  //       { opacity: 0 },
-  //       { opacity: 1, duration: 0.8, stagger: { each: 0.2, from: 'start' } },
-  //       0.3
-  //     );
-  //   }
-  //   if (staggers.length !== 0) {
-  //     const staggerChildren = [];
-  //     staggers.forEach((item) => {
-  //       const children = gsap.utils.toArray(item.children);
-  //       staggerChildren.push(...children);
-  //     });
-  //     tl.fromTo(
-  //       staggerChildren,
-  //       { opacity: 0, y: '2rem' },
-  //       { opacity: 1, y: '0rem', stagger: { each: 0.2, from: 'start' } },
-  //       0.3
-  //     );
-  //   }
-  //   return tl;
-  // };
-  // //set up load animation timelines
-  const homeHeroAnimation = homeLoad();
+  const homeLoad = function () {
+    const tl = gsap
+      .timeline({
+        paused: true,
+        defaults: {
+          ease: 'power2.out',
+          duration: 1,
+        },
+      })
+      .fromTo(
+        [imgBottom, imgLeft, imgRight, imgLeftGuy],
+        {
+          scale: 1.2,
+        },
+        {
+          scale: 1,
+        }
+      );
+    return tl;
+  };
+  homeLoad();
 
   const pageLoadAnimation = function () {
     //prevent scrolling
     body.style.overflow = 'hidden';
+    // //set up load animation timelines
+    const homeHeroAnimation = homeLoad();
 
     //timeline while page is loading
     const tlLoading = gsap.timeline({ paused: true });
     //tweens
-    // tlLoading.set(loadWrap, { display: 'flex' });
-    // tlLoading.set(loadLogoWrap, { display: 'flex' });
-    // tlLoading.set(loadBackground, { display: 'flex' });
-    // tlLoading.set(loadLogoFront, { opacity: 1 });
     tlLoading.fromTo(
       loadLineFill,
       { width: '0%' },

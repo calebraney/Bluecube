@@ -106,5 +106,5 @@ export const load = function () {
   tl.play(0);
 
   // Alternatively use the returned tl to trigger the interaction after transition or image load
-  //   return tl;
+  return tl;
 };
