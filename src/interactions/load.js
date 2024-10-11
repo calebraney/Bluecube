@@ -1,8 +1,7 @@
 import { attr, checkBreakpoints, runSplit } from '../utilities';
 /* CSS in PAGE Head
 
-html:not(.w-editor) [data-ix-load]:not([data-ix-load=""])
- {
+html:not(.w-editor) [data-ix-load] {
 	opacity: 0;
 }
  html:not(.w-editor) [data-ix-load="stagger"] > * {
@@ -10,7 +9,7 @@ html:not(.w-editor) [data-ix-load]:not([data-ix-load=""])
 }
 */
 
-export const load = function (gsapContext) {
+export const load = function () {
   //animation ID
   const ANIMATION_ID = 'load';
   // hero animation attribute
@@ -104,8 +103,8 @@ export const load = function (gsapContext) {
   });
 
   //Play interaction on page load
-  // tl.play(0);
+  tl.play(0);
 
   // Alternatively use the returned tl to trigger the interaction after transition or image load
-  return tl;
+  //   return tl;
 };

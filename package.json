@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",
+    "imagesloaded": "^5.0.0",
     "split-type": "^0.3.4"
   }
 }

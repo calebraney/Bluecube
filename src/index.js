@@ -4,10 +4,13 @@ import { scrollIn } from './interactions/scrollIn';
 import { scrolling } from './interactions/scrolling';
 import { parallax } from './interactions/parallax';
 import { load } from './interactions/load';
-import { homeAnimations } from './interactions/home';
+import { homeScroll, homeLoad } from './interactions/home';
 import Lenis from '@studio-freight/lenis';
+import { pageLoad } from './interactions/pageLoader';
 
 //global exported variables
+//Page load interaction
+pageLoad();
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
@@ -620,7 +623,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //functional interactions
         const currentUrl = window.location.pathname;
         if (currentUrl === '/') {
-          homeAnimations();
+          homeScroll();
         } else {
           passwordFunction();
         }

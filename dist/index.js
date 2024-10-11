@@ -1,11 +1,339 @@
 (() => {
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __esm = (fn, res) => function __init() {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  };
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
+
   // bin/live-reload.js
-  new EventSource(`http://localhost:3000/esbuild`).addEventListener(
-    "change",
-    () => location.reload()
-  );
+  var init_live_reload = __esm({
+    "bin/live-reload.js"() {
+      new EventSource(`http://localhost:3000/esbuild`).addEventListener(
+        "change",
+        () => location.reload()
+      );
+    }
+  });
+
+  // node_modules/ev-emitter/ev-emitter.js
+  var require_ev_emitter = __commonJS({
+    "node_modules/ev-emitter/ev-emitter.js"(exports, module) {
+      init_live_reload();
+      (function(global, factory) {
+        if (typeof module == "object" && module.exports) {
+          module.exports = factory();
+        } else {
+          global.EvEmitter = factory();
+        }
+      })(typeof window != "undefined" ? window : exports, function() {
+        function EvEmitter() {
+        }
+        let proto = EvEmitter.prototype;
+        proto.on = function(eventName, listener) {
+          if (!eventName || !listener) return this;
+          let events = this._events = this._events || {};
+          let listeners = events[eventName] = events[eventName] || [];
+          if (!listeners.includes(listener)) {
+            listeners.push(listener);
+          }
+          return this;
+        };
+        proto.once = function(eventName, listener) {
+          if (!eventName || !listener) return this;
+          this.on(eventName, listener);
+          let onceEvents = this._onceEvents = this._onceEvents || {};
+          let onceListeners = onceEvents[eventName] = onceEvents[eventName] || {};
+          onceListeners[listener] = true;
+          return this;
+        };
+        proto.off = function(eventName, listener) {
+          let listeners = this._events && this._events[eventName];
+          if (!listeners || !listeners.length) return this;
+          let index = listeners.indexOf(listener);
+          if (index != -1) {
+            listeners.splice(index, 1);
+          }
+          return this;
+        };
+        proto.emitEvent = function(eventName, args) {
+          let listeners = this._events && this._events[eventName];
+          if (!listeners || !listeners.length) return this;
+          listeners = listeners.slice(0);
+          args = args || [];
+          let onceListeners = this._onceEvents && this._onceEvents[eventName];
+          for (let listener of listeners) {
+            let isOnce = onceListeners && onceListeners[listener];
+            if (isOnce) {
+              this.off(eventName, listener);
+              delete onceListeners[listener];
+            }
+            listener.apply(this, args);
+          }
+          return this;
+        };
+        proto.allOff = function() {
+          delete this._events;
+          delete this._onceEvents;
+          return this;
+        };
+        return EvEmitter;
+      });
+    }
+  });
+
+  // node_modules/imagesloaded/imagesloaded.js
+  var require_imagesloaded = __commonJS({
+    "node_modules/imagesloaded/imagesloaded.js"(exports, module) {
+      init_live_reload();
+      (function(window2, factory) {
+        if (typeof module == "object" && module.exports) {
+          module.exports = factory(window2, require_ev_emitter());
+        } else {
+          window2.imagesLoaded = factory(window2, window2.EvEmitter);
+        }
+      })(
+        typeof window !== "undefined" ? window : exports,
+        function factory(window2, EvEmitter) {
+          let $ = window2.jQuery;
+          let console2 = window2.console;
+          function makeArray(obj) {
+            if (Array.isArray(obj)) return obj;
+            let isArrayLike2 = typeof obj == "object" && typeof obj.length == "number";
+            if (isArrayLike2) return [...obj];
+            return [obj];
+          }
+          function ImagesLoaded(elem, options, onAlways) {
+            if (!(this instanceof ImagesLoaded)) {
+              return new ImagesLoaded(elem, options, onAlways);
+            }
+            let queryElem = elem;
+            if (typeof elem == "string") {
+              queryElem = document.querySelectorAll(elem);
+            }
+            if (!queryElem) {
+              console2.error(`Bad element for imagesLoaded ${queryElem || elem}`);
+              return;
+            }
+            this.elements = makeArray(queryElem);
+            this.options = {};
+            if (typeof options == "function") {
+              onAlways = options;
+            } else {
+              Object.assign(this.options, options);
+            }
+            if (onAlways) this.on("always", onAlways);
+            this.getImages();
+            if ($) this.jqDeferred = new $.Deferred();
+            setTimeout(this.check.bind(this));
+          }
+          ImagesLoaded.prototype = Object.create(EvEmitter.prototype);
+          ImagesLoaded.prototype.getImages = function() {
+            this.images = [];
+            this.elements.forEach(this.addElementImages, this);
+          };
+          const elementNodeTypes = [1, 9, 11];
+          ImagesLoaded.prototype.addElementImages = function(elem) {
+            if (elem.nodeName === "IMG") {
+              this.addImage(elem);
+            }
+            if (this.options.background === true) {
+              this.addElementBackgroundImages(elem);
+            }
+            let { nodeType } = elem;
+            if (!nodeType || !elementNodeTypes.includes(nodeType)) return;
+            let childImgs = elem.querySelectorAll("img");
+            for (let img of childImgs) {
+              this.addImage(img);
+            }
+            if (typeof this.options.background == "string") {
+              let children = elem.querySelectorAll(this.options.background);
+              for (let child of children) {
+                this.addElementBackgroundImages(child);
+              }
+            }
+          };
+          const reURL = /url\((['"])?(.*?)\1\)/gi;
+          ImagesLoaded.prototype.addElementBackgroundImages = function(elem) {
+            let style = getComputedStyle(elem);
+            if (!style) return;
+            let matches = reURL.exec(style.backgroundImage);
+            while (matches !== null) {
+              let url = matches && matches[2];
+              if (url) {
+                this.addBackground(url, elem);
+              }
+              matches = reURL.exec(style.backgroundImage);
+            }
+          };
+          ImagesLoaded.prototype.addImage = function(img) {
+            let loadingImage = new LoadingImage(img);
+            this.images.push(loadingImage);
+          };
+          ImagesLoaded.prototype.addBackground = function(url, elem) {
+            let background = new Background(url, elem);
+            this.images.push(background);
+          };
+          ImagesLoaded.prototype.check = function() {
+            this.progressedCount = 0;
+            this.hasAnyBroken = false;
+            if (!this.images.length) {
+              this.complete();
+              return;
+            }
+            let onProgress = (image, elem, message) => {
+              setTimeout(() => {
+                this.progress(image, elem, message);
+              });
+            };
+            this.images.forEach(function(loadingImage) {
+              loadingImage.once("progress", onProgress);
+              loadingImage.check();
+            });
+          };
+          ImagesLoaded.prototype.progress = function(image, elem, message) {
+            this.progressedCount++;
+            this.hasAnyBroken = this.hasAnyBroken || !image.isLoaded;
+            this.emitEvent("progress", [this, image, elem]);
+            if (this.jqDeferred && this.jqDeferred.notify) {
+              this.jqDeferred.notify(this, image);
+            }
+            if (this.progressedCount === this.images.length) {
+              this.complete();
+            }
+            if (this.options.debug && console2) {
+              console2.log(`progress: ${message}`, image, elem);
+            }
+          };
+          ImagesLoaded.prototype.complete = function() {
+            let eventName = this.hasAnyBroken ? "fail" : "done";
+            this.isComplete = true;
+            this.emitEvent(eventName, [this]);
+            this.emitEvent("always", [this]);
+            if (this.jqDeferred) {
+              let jqMethod = this.hasAnyBroken ? "reject" : "resolve";
+              this.jqDeferred[jqMethod](this);
+            }
+          };
+          function LoadingImage(img) {
+            this.img = img;
+          }
+          LoadingImage.prototype = Object.create(EvEmitter.prototype);
+          LoadingImage.prototype.check = function() {
+            let isComplete = this.getIsImageComplete();
+            if (isComplete) {
+              this.confirm(this.img.naturalWidth !== 0, "naturalWidth");
+              return;
+            }
+            this.proxyImage = new Image();
+            if (this.img.crossOrigin) {
+              this.proxyImage.crossOrigin = this.img.crossOrigin;
+            }
+            this.proxyImage.addEventListener("load", this);
+            this.proxyImage.addEventListener("error", this);
+            this.img.addEventListener("load", this);
+            this.img.addEventListener("error", this);
+            this.proxyImage.src = this.img.currentSrc || this.img.src;
+          };
+          LoadingImage.prototype.getIsImageComplete = function() {
+            return this.img.complete && this.img.naturalWidth;
+          };
+          LoadingImage.prototype.confirm = function(isLoaded, message) {
+            this.isLoaded = isLoaded;
+            let { parentNode } = this.img;
+            let elem = parentNode.nodeName === "PICTURE" ? parentNode : this.img;
+            this.emitEvent("progress", [this, elem, message]);
+          };
+          LoadingImage.prototype.handleEvent = function(event) {
+            let method = "on" + event.type;
+            if (this[method]) {
+              this[method](event);
+            }
+          };
+          LoadingImage.prototype.onload = function() {
+            this.confirm(true, "onload");
+            this.unbindEvents();
+          };
+          LoadingImage.prototype.onerror = function() {
+            this.confirm(false, "onerror");
+            this.unbindEvents();
+          };
+          LoadingImage.prototype.unbindEvents = function() {
+            this.proxyImage.removeEventListener("load", this);
+            this.proxyImage.removeEventListener("error", this);
+            this.img.removeEventListener("load", this);
+            this.img.removeEventListener("error", this);
+          };
+          function Background(url, element) {
+            this.url = url;
+            this.element = element;
+            this.img = new Image();
+          }
+          Background.prototype = Object.create(LoadingImage.prototype);
+          Background.prototype.check = function() {
+            this.img.addEventListener("load", this);
+            this.img.addEventListener("error", this);
+            this.img.src = this.url;
+            let isComplete = this.getIsImageComplete();
+            if (isComplete) {
+              this.confirm(this.img.naturalWidth !== 0, "naturalWidth");
+              this.unbindEvents();
+            }
+          };
+          Background.prototype.unbindEvents = function() {
+            this.img.removeEventListener("load", this);
+            this.img.removeEventListener("error", this);
+          };
+          Background.prototype.confirm = function(isLoaded, message) {
+            this.isLoaded = isLoaded;
+            this.emitEvent("progress", [this, this.element, message]);
+          };
+          ImagesLoaded.makeJQueryPlugin = function(jQuery) {
+            jQuery = jQuery || window2.jQuery;
+            if (!jQuery) return;
+            $ = jQuery;
+            $.fn.imagesLoaded = function(options, onAlways) {
+              let instance = new ImagesLoaded(this, options, onAlways);
+              return instance.jqDeferred.promise($(this));
+            };
+          };
+          ImagesLoaded.makeJQueryPlugin();
+          return ImagesLoaded;
+        }
+      );
+    }
+  });
+
+  // src/index.js
+  init_live_reload();
+
+  // src/utilities.js
+  init_live_reload();
 
   // node_modules/split-type/dist/index.js
+  init_live_reload();
   (function() {
     function append() {
       var length = arguments.length;
@@ -824,7 +1152,11 @@
     return true;
   };
 
+  // src/interactions/hoverActive.js
+  init_live_reload();
+
   // src/interactions/scrollIn.js
+  init_live_reload();
   var scrollIn = function(gsapContext) {
     const ANIMATION_ID = "scrollin";
     const ELEMENT = "data-ix-scrollin";
@@ -900,7 +1232,7 @@
       let defaultDirection = "right";
       let clipStart;
       const direction = attr2(defaultDirection, item.getAttribute(CLIP_DIRECTION));
-      const clipDirections = {
+      const clipDirections2 = {
         left: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
         right: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
         top: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
@@ -908,16 +1240,16 @@
         full: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
       };
       if (direction === "left") {
-        clipStart = clipDirections.left;
+        clipStart = clipDirections2.left;
       }
       if (direction === "right") {
-        clipStart = clipDirections.right;
+        clipStart = clipDirections2.right;
       }
       if (direction === "top") {
-        clipStart = clipDirections.top;
+        clipStart = clipDirections2.top;
       }
       if (direction === "bottom") {
-        clipStart = clipDirections.bottom;
+        clipStart = clipDirections2.bottom;
       }
       return clipStart;
     };
@@ -1015,6 +1347,7 @@
   };
 
   // src/interactions/scrolling.js
+  init_live_reload();
   var scrolling = function(gsapContext) {
     const ANIMATION_ID = "scrolling";
     const WRAP = `[data-ix-scrolling="wrap"]`;
@@ -1133,6 +1466,7 @@
   };
 
   // src/interactions/parallax.js
+  init_live_reload();
   var parallax = function(gsapContext) {
     const ANIMATION_ID = "parallax";
     const WRAP = `[data-ix-parallax="wrap"]`;
@@ -1196,7 +1530,8 @@
   };
 
   // src/interactions/load.js
-  var load = function(gsapContext) {
+  init_live_reload();
+  var load = function() {
     const ANIMATION_ID = "load";
     const ATTRIBUTE = "data-ix-load";
     const HEADING = "heading";
@@ -1261,55 +1596,73 @@
         loadStagger(item);
       }
     });
-    return tl;
+    tl.play(0);
   };
 
   // src/interactions/home.js
-  var homeAnimations = function() {
-    const homeWrap = document.querySelector(".home_wrap");
-    const homeScrollWrap = document.querySelector(".home_scroll_wrap");
-    const homeBgWrap = document.querySelector(".home_bg_wrap");
-    const homeBgTopWrap = document.querySelector(".home_bg_top_wrap");
-    const heroSection = document.querySelector(".home_hero_wrap");
-    const titleSection = document.querySelector(".home_title_wrap");
-    const detailsSection = document.querySelector(".home_details_wrap");
-    const artistsSection = document.querySelector(".home_artists_wrap");
-    const taglineSection = document.querySelector(".home_tagline_wrap");
-    const socialSection = document.querySelector(".home_social_wrap");
-    const imgFrames = gsap.utils.toArray(".home_bg_visual");
-    const backgroundOverlay = document.querySelector(".home_bg_overlay");
-    const imgRight = document.querySelector(".home_bg_right");
-    const imgLeft = document.querySelector(".home_bg_left");
-    const imgBottom = document.querySelector(".home_bg_bottom");
-    const imgRightGuy = document.querySelector(".home_bg_right-guy");
-    const imgLeftGuy = document.querySelector(".home_bg_left-guy");
-    const imgLady = document.querySelector(".home_bg_lady-wrap");
-    const imgShoe = document.querySelector(".home_bg_shoe");
-    const heroLogo = document.querySelector(".home_hero_logo");
-    const heroText = document.querySelector(".home_hero_text");
-    const heroScroll = document.querySelector(".home_hero_scroll");
-    const heroScrollArrow = document.querySelector(".home_hero_arrow");
-    const titleText = document.querySelector(".home_title_text");
-    const detailsCards = gsap.utils.toArray(".home-details_card");
-    const detailsHeadings = gsap.utils.toArray(".home-details_heading");
-    const artistItems = gsap.utils.toArray(".home_artists_item");
-    const taglineItems = gsap.utils.toArray(".home_tagline_text");
-    let frameTransform;
-    const clipDirections = {
-      left: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
-      right: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
-      top: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-      bottom: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
-      full: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
-    };
+  init_live_reload();
+  var homeWrap = document.querySelector(".home_wrap");
+  var homeScrollWrap = document.querySelector(".home_scroll_wrap");
+  var homeBgWrap = document.querySelector(".home_bg_wrap");
+  var homeBgTopWrap = document.querySelector(".home_bg_top_wrap");
+  var heroSection = document.querySelector(".home_hero_wrap");
+  var titleSection = document.querySelector(".home_title_wrap");
+  var detailsSection = document.querySelector(".home_details_wrap");
+  var artistsSection = document.querySelector(".home_artists_wrap");
+  var taglineSection = document.querySelector(".home_tagline_wrap");
+  var socialSection = document.querySelector(".home_social_wrap");
+  var imgFrames = gsap.utils.toArray(".home_bg_visual");
+  var backgroundOverlay = document.querySelector(".home_bg_overlay");
+  var imgRight = document.querySelector(".home_bg_right");
+  var imgLeft = document.querySelector(".home_bg_left");
+  var imgBottom = document.querySelector(".home_bg_bottom");
+  var imgRightGuy = document.querySelector(".home_bg_right-guy");
+  var imgLeftGuy = document.querySelector(".home_bg_left-guy");
+  var imgLady = document.querySelector(".home_bg_lady-wrap");
+  var imgShoe = document.querySelector(".home_bg_shoe");
+  var heroLogo = document.querySelector(".home_hero_logo");
+  var heroText = document.querySelector(".home_hero_text");
+  var heroScroll = document.querySelector(".home_hero_scroll");
+  var heroScrollArrow = document.querySelector(".home_hero_arrow");
+  var titleText = document.querySelector(".home_title_text");
+  var detailsCards = gsap.utils.toArray(".home-details_card");
+  var detailsHeadings = gsap.utils.toArray(".home-details_heading");
+  var artistItems = gsap.utils.toArray(".home_artists_item");
+  var taglineItems = gsap.utils.toArray(".home_tagline_text");
+  var frameTransform;
+  var clipDirections = {
+    left: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
+    right: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
+    top: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+    bottom: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
+    full: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
+  };
+  var homeLoad = function() {
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: {
+        ease: "power2.out",
+        duration: 1
+      }
+    }).fromTo(
+      [imgBottom, imgLeft, imgRight, imgLeftGuy],
+      {
+        scale: 1.2
+      },
+      {
+        scale: 1
+      },
+      0
+    );
+    return tl;
+  };
+  homeLoad();
+  var homeScroll = function() {
     if (!homeWrap) {
       return;
     }
     artistsSection.style.height = `${100 * (artistItems.length + 1)}vh`;
     ScrollTrigger.refresh();
-    const homeLoad = function() {
-    };
-    homeLoad();
     const calculateFrameTransform = function() {
       const frame1 = imgFrames[0];
       let frameHeight = frame1.offsetHeight;
@@ -1325,137 +1678,193 @@
         homeScroll();
       }
     });
-    const homeScroll = function() {
-      let tlMain = gsap.timeline({
+    let scrollArrowTL = gsap.timeline({
+      repeat: -1
+    }).fromTo(
+      heroScrollArrow,
+      {
+        y: "0rem"
+      },
+      {
+        y: "3rem;",
+        duration: 0.8
+      }
+    ).to(heroScrollArrow, {
+      y: "0rem",
+      duration: 0.8
+    });
+    let tlMain = gsap.timeline({
+      scrollTrigger: {
+        trigger: homeScrollWrap,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.5
+      },
+      defaults: {
+        duration: 1,
+        ease: "none"
+      }
+    }).fromTo(
+      imgFrames,
+      {
+        y: "0px"
+      },
+      {
+        y: frameTransform
+      }
+    ).fromTo(
+      [imgBottom, imgLeft, imgRight, imgLeftGuy],
+      {
+        y: "0vh"
+      },
+      {
+        y: "-10vh"
+      },
+      0
+    ).to(
+      imgLeft,
+      {
+        x: "-20%"
+      },
+      0
+    ).to(
+      imgLeftGuy,
+      {
+        x: "-5%"
+      },
+      0
+    ).to(
+      imgRight,
+      {
+        x: "20%"
+      },
+      0
+    );
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: heroSection,
+        start: "top top",
+        end: "bottom 90%",
+        // markers: false,
+        scrub: true
+      },
+      defaults: {
+        duration: 1,
+        ease: "power1.out"
+      }
+    }).fromTo(heroText, { yPercent: 0 }, { yPercent: -120, duration: 0.75 }).fromTo(heroScroll, { opacity: 1 }, { opacity: 0, duration: 0.5 }, "<").fromTo(heroLogo, { yPercent: 0 }, { yPercent: -120 });
+    const titleSplit = runSplit(titleText, "chars, words, lines");
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: titleSection,
+        start: "top bottom",
+        end: "bottom 20%",
+        scrub: true,
+        markers: false
+      },
+      defaults: {
+        duration: 1,
+        ease: "power1.out"
+      }
+    }).set(homeBgTopWrap, { opacity: 1 }).fromTo(
+      titleSplit.chars,
+      { opacity: 0, x: "1rem" },
+      { opacity: 1, x: "0rem", duration: 0.5, stagger: { from: "start", each: 0.015 } }
+    ).fromTo(imgLady, { opacity: 0 }, { opacity: 1, duration: 0.1 }, "<.5").fromTo(imgRightGuy, { opacity: 0 }, { opacity: 1, duration: 0.2 }, "<").fromTo(
+      imgLady,
+      { rotateZ: -35, yPercent: 0, xPercent: 0 },
+      { rotateZ: 15, yPercent: -10, xPercent: -25 },
+      "<"
+    ).fromTo(
+      imgShoe,
+      { rotateZ: 0, yPercent: 5, xPercent: 0 },
+      { rotateZ: 45, yPercent: 0, xPercent: -7 },
+      "<"
+    ).fromTo(imgRightGuy, { xPercent: 50 }, { xPercent: 0, duration: 0.5 }, "<").to(homeBgTopWrap, { opacity: 0, duration: 0.1 }, "<.3");
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: detailsSection,
+        start: "top bottom",
+        end: "bottom bottom",
+        scrub: true,
+        markers: false
+      },
+      defaults: {
+        duration: 1,
+        ease: "power1.out"
+      }
+    }).fromTo(detailsCards[0], { xPercent: 30 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[1], { xPercent: -50 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[2], { xPercent: 80 }, { xPercent: 0, duration: 1 }, "<").to(backgroundOverlay, { opacity: 0.8, duration: 0.5 }, "<.2");
+    detailsHeadings.forEach((item, index) => {
+      const headingSplit = runSplit(item, "words, lines");
+      gsap.timeline({
         scrollTrigger: {
-          trigger: homeScrollWrap,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.5
+          trigger: item,
+          start: "top 90%",
+          end: "center top",
+          scrub: true,
+          markers: false
         },
         defaults: {
           duration: 1,
           ease: "none"
         }
       }).fromTo(
-        imgFrames,
-        {
-          y: "0px"
-        },
-        {
-          y: frameTransform
-        }
+        headingSplit.words,
+        { opacity: 0, yPercent: 25 },
+        { opacity: 1, yPercent: 0, duration: 0.5, stagger: { from: "start", each: 0.1 } }
       ).fromTo(
-        [imgBottom, imgLeft, imgRight, imgLeftGuy],
-        {
-          y: "0vh"
-        },
-        {
-          y: "-10vh"
-        },
-        0
-      ).to(
-        imgLeft,
-        {
-          x: "-20%"
-        },
-        0
-      ).to(
-        imgLeftGuy,
-        {
-          x: "-5%"
-        },
-        0
-      ).to(
-        imgRight,
-        {
-          x: "20%"
-        },
-        0
+        headingSplit.lines,
+        { opacity: 1 },
+        { opacity: 0, duration: 0.5, delay: 1, stagger: { from: "start", each: 0.1 } }
       );
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: heroSection,
-          start: "top top",
-          end: "bottom 95%",
-          // markers: false,
-          scrub: true
-        },
-        defaults: {
-          duration: 1,
-          ease: "power1.out"
-        }
-      }).fromTo(heroText, { yPercent: 0 }, { yPercent: -120 }).fromTo(heroScroll, { opacity: 1 }, { opacity: 0, duration: 0.5 }, "<").fromTo(heroLogo, { yPercent: 0 }, { yPercent: -120 });
-      const titleSplit = runSplit(titleText, "chars, words, lines");
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: titleSection,
-          start: "top bottom",
-          end: "bottom 20%",
-          scrub: true,
-          markers: false
-        },
-        defaults: {
-          duration: 1,
-          ease: "power1.out"
-        }
-      }).set(homeBgTopWrap, { opacity: 1 }).fromTo(
-        titleSplit.chars,
-        { opacity: 0, x: "1rem" },
-        { opacity: 1, x: "0rem", duration: 0.5, stagger: { from: "start", each: 0.015 } }
-      ).fromTo(imgLady, { opacity: 0 }, { opacity: 1, duration: 0.1 }, "<.5").fromTo(imgRightGuy, { opacity: 0 }, { opacity: 1, duration: 0.2 }, "<").fromTo(
-        imgLady,
-        { rotateZ: -35, yPercent: 0, xPercent: 0 },
-        { rotateZ: 15, yPercent: -10, xPercent: -25 },
-        "<"
-      ).fromTo(
-        imgShoe,
-        { rotateZ: 0, yPercent: 5, xPercent: 0 },
-        { rotateZ: 45, yPercent: 0, xPercent: -7 },
-        "<"
-      ).fromTo(imgRightGuy, { xPercent: 50 }, { xPercent: 0, duration: 0.5 }, "<").to(homeBgTopWrap, { opacity: 0, duration: 0.1 }, "<.3");
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: detailsSection,
-          start: "top bottom",
-          end: "bottom bottom",
-          scrub: true,
-          markers: false
-        },
-        defaults: {
-          duration: 1,
-          ease: "power1.out"
-        }
-      }).fromTo(detailsCards[0], { xPercent: 30 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[1], { xPercent: -50 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[2], { xPercent: 80 }, { xPercent: 0, duration: 1 }, "<").to(backgroundOverlay, { opacity: 0.8, duration: 0.5 }, "<.2");
-      detailsHeadings.forEach((item, index) => {
-        const headingSplit = runSplit(item, "words, lines");
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: item,
-            start: "top 90%",
-            end: "center top",
-            scrub: true,
-            markers: false
-          },
-          defaults: {
-            duration: 1,
-            ease: "none"
-          }
-        }).fromTo(
-          headingSplit.words,
-          { opacity: 0, yPercent: 25 },
-          { opacity: 1, yPercent: 0, duration: 0.5, stagger: { from: "start", each: 0.1 } }
-        ).fromTo(
-          headingSplit.lines,
-          { opacity: 1 },
-          { opacity: 0, duration: 0.5, delay: 1, stagger: { from: "start", each: 0.1 } }
+    });
+    const artistTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: artistsSection,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        markers: false
+      },
+      defaults: {
+        duration: 1,
+        ease: "none"
+      }
+    });
+    artistTL.set(artistItems[0], { clipPath: clipDirections.full });
+    artistItems.forEach((item, index) => {
+      if (index !== 0) {
+        artistTL.fromTo(
+          item,
+          { clipPath: clipDirections.bottom },
+          { clipPath: clipDirections.full },
+          "<.025"
         );
-      });
-      const artistTL = gsap.timeline({
+      }
+      if (index !== artistItems.length - 1) {
+        artistTL.to(item, { clipPath: clipDirections.top, delay: index === 0 ? 0.5 : 1.5 }, "<");
+      }
+    });
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: taglineSection,
+        start: "top bottom",
+        end: "bottom 40%",
+        scrub: true,
+        markers: false
+      },
+      defaults: {
+        duration: 1,
+        ease: "power1.out"
+      }
+    });
+    taglineItems.forEach((item, index) => {
+      const headingSplit = runSplit(item, "chars, lines");
+      gsap.timeline({
         scrollTrigger: {
-          trigger: artistsSection,
-          start: "top top",
-          end: "bottom bottom",
+          trigger: item,
+          start: "top 90%",
+          end: "top top",
           scrub: true,
           markers: false
         },
@@ -1463,59 +1872,16 @@
           duration: 1,
           ease: "none"
         }
-      });
-      artistTL.set(artistItems[0], { clipPath: clipDirections.full });
-      artistItems.forEach((item, index) => {
-        if (index !== 0) {
-          artistTL.fromTo(
-            item,
-            { clipPath: clipDirections.bottom },
-            { clipPath: clipDirections.full },
-            "<.025"
-          );
-        }
-        if (index !== artistItems.length - 1) {
-          artistTL.to(item, { clipPath: clipDirections.top, delay: index === 0 ? 0.5 : 1.5 }, "<");
-        }
-      });
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: taglineSection,
-          start: "top bottom",
-          end: "bottom 40%",
-          scrub: true,
-          markers: false
-        },
-        defaults: {
-          duration: 1,
-          ease: "power1.out"
-        }
-      });
-      taglineItems.forEach((item, index) => {
-        const headingSplit = runSplit(item, "chars, lines");
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: item,
-            start: "top 90%",
-            end: "top top",
-            scrub: true,
-            markers: false
-          },
-          defaults: {
-            duration: 1,
-            ease: "none"
-          }
-        }).fromTo(
-          headingSplit.chars,
-          { opacity: 0, yPercent: 10, x: "1.5rem" },
-          { opacity: 1, yPercent: 0, x: "0rem", stagger: { from: "start", each: 0.1 } }
-        ).fromTo(item, { opacity: 1 }, { opacity: 0, duration: 0.5, delay: 1 });
-      });
-    };
-    homeScroll();
+      }).fromTo(
+        headingSplit.chars,
+        { opacity: 0, yPercent: 10, x: "1.5rem" },
+        { opacity: 1, yPercent: 0, x: "0rem", stagger: { from: "start", each: 0.1 } }
+      ).fromTo(item, { opacity: 1 }, { opacity: 0, duration: 0.5, delay: 1 });
+    });
   };
 
   // node_modules/@studio-freight/lenis/dist/lenis.mjs
+  init_live_reload();
   function t(t2, e2, i) {
     return Math.max(t2, Math.min(e2, i));
   }
@@ -1762,7 +2128,103 @@
     }
   };
 
+  // src/interactions/pageLoader.js
+  init_live_reload();
+  var import_imagesloaded = __toESM(require_imagesloaded(), 1);
+  var pageLoad = function() {
+    const LOAD_WRAP = ".load_component";
+    const LOAD_LOGO = ".load_logo";
+    const LOAD_LINE = ".load_line-wrap";
+    const LOAD_LINE_FILL = ".load_line";
+    const LOAD_BG = ".load_bg";
+    const MAIN_WRAP = ".main-wrapper";
+    const ATTRIBUTE = "data-ix-load";
+    const TITLE = "title";
+    const ITEM = "item";
+    const FADE = "fade";
+    const STAGGER = "stagger";
+    const loadWrap = document.querySelector(LOAD_WRAP);
+    const loadLogo = document.querySelector(LOAD_LOGO);
+    const loadLine = document.querySelector(LOAD_LINE);
+    const loadLineFill = document.querySelector(LOAD_LINE_FILL);
+    const loadBackground = document.querySelector(LOAD_BG);
+    const body = document.querySelector("body");
+    const contentWrap = document.querySelector(MAIN_WRAP);
+    if (!loadWrap || !contentWrap) {
+      load();
+      return;
+    }
+    const homeHeroAnimation = homeLoad();
+    const pageLoadAnimation = function() {
+      body.style.overflow = "hidden";
+      const tlLoading = gsap.timeline({ paused: true });
+      tlLoading.fromTo(
+        loadLineFill,
+        { width: "0%" },
+        {
+          width: "100%",
+          ease: "linear",
+          duration: 1
+        }
+      );
+      const tlLoaded = gsap.timeline({
+        paused: true,
+        delay: 0.1,
+        onStart: () => {
+          setTimeout(() => {
+            load();
+          }, 600);
+          const currentUrl = window.location.pathname;
+          if (currentUrl === "/") {
+            homeHeroAnimation.play();
+          }
+          ScrollTrigger.refresh();
+        }
+      });
+      tlLoaded.fromTo(
+        [loadLogo, loadLine],
+        { opacity: 1 },
+        {
+          opacity: 0,
+          duration: 0.45
+        }
+      );
+      tlLoaded.fromTo(
+        loadBackground,
+        { y: "0vh", borderRadius: "0vw" },
+        {
+          y: "-100vh",
+          borderRadius: "20vw",
+          ease: "power1.inOut",
+          duration: 1
+        },
+        "<"
+      );
+      tlLoaded.set(loadWrap, { display: "none" });
+      tlLoaded.set("body", { overflow: "visible" });
+      const start = performance.now();
+      const imgLoad = new import_imagesloaded.default("body", { background: true }, onImagesLoaded);
+      const numImages = imgLoad.images.length;
+      imgLoad.on("progress", function(instance, image) {
+        var result = image.isLoaded ? "loaded" : "broken";
+        const progress = instance.progressedCount / numImages;
+        tlLoading.progress(progress);
+      });
+      function onImagesLoaded() {
+        const end = performance.now();
+        const MIN_TIME = 800;
+        const duration = end - start;
+        const remainingTime = Math.max(MIN_TIME - duration, 0);
+        setTimeout(() => {
+          tlLoaded.play();
+        }, remainingTime);
+      }
+    };
+    pageLoadAnimation();
+  };
+
   // src/index.js
+  pageLoad();
   document.addEventListener("DOMContentLoaded", function() {
     if (gsap.ScrollTrigger !== void 0) {
       gsap.registerPlugin(ScrollTrigger);
@@ -2270,7 +2732,7 @@
           let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
           const currentUrl = window.location.pathname;
           if (currentUrl === "/") {
-            homeAnimations();
+            homeScroll();
           } else {
             passwordFunction();
           }
@@ -2309,3 +2771,12 @@
     scrollReset();
   });
 })();
+/*! Bundled license information:
+
+imagesloaded/imagesloaded.js:
+  (*!
+   * imagesLoaded v5.0.0
+   * JavaScript is all like "You images are done yet or what?"
+   * MIT License
+   *)
+*/
