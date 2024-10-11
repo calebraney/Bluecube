@@ -1639,226 +1639,245 @@
     full: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
   };
   var homeScroll = function() {
-    if (!homeWrap) {
-      return;
-    }
-    artistsSection.style.height = `${100 * (artistItems.length + 1)}vh`;
-    ScrollTrigger.refresh();
-    const calculateFrameTransform = function() {
-      const frame1 = imgFrames[0];
-      let frameHeight = frame1.offsetHeight;
-      let viewportHeight = window.innerHeight;
-      frameTransform = frameHeight - viewportHeight;
-    };
-    calculateFrameTransform();
-    let windowWidth = window.innerWidth;
-    window.addEventListener("resize", function() {
-      if (window.innerWidth !== windowWidth) {
-        windowWidth = window.innerWidth;
+    let mm = gsap.matchMedia();
+    mm.add(
+      {
+        //This is the conditions object
+        isMobile: "(max-width: 767px)",
+        isTablet: "(min-width: 768px)  and (max-width: 991px)",
+        isDesktop: "(min-width: 992px)",
+        reduceMotion: "(prefers-reduced-motion: reduce)"
+      },
+      (gsapContext) => {
+        let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
+        if (!homeWrap) {
+          return;
+        }
+        artistsSection.style.height = `${100 * (artistItems.length + 1)}lvh`;
+        ScrollTrigger.refresh();
+        const calculateFrameTransform = function() {
+          const frame1 = imgFrames[0];
+          let frameHeight = frame1.offsetHeight;
+          let viewportHeight = window.innerHeight;
+          frameTransform = frameHeight - viewportHeight;
+        };
         calculateFrameTransform();
-        homeScroll();
-      }
-    });
-    let scrollArrowTL = gsap.timeline({
-      repeat: -1
-    }).fromTo(
-      heroScrollArrow,
-      {
-        y: "0rem"
-      },
-      {
-        y: "3rem;",
-        duration: 0.8
-      }
-    ).to(heroScrollArrow, {
-      y: "0rem",
-      duration: 0.8
-    });
-    let tlMain = gsap.timeline({
-      scrollTrigger: {
-        trigger: homeScrollWrap,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.5
-      },
-      defaults: {
-        duration: 1,
-        ease: "none"
-      }
-    }).fromTo(
-      imgFrames,
-      {
-        y: "0px"
-      },
-      {
-        y: frameTransform
-      }
-    ).fromTo(
-      [imgBottom, imgLeft, imgRight, imgLeftGuy],
-      {
-        y: "0vh"
-      },
-      {
-        y: "-10vh"
-      },
-      0
-    ).to(
-      imgLeft,
-      {
-        x: "-20%"
-      },
-      0
-    ).to(
-      imgLeftGuy,
-      {
-        x: "-5%"
-      },
-      0
-    ).to(
-      imgRight,
-      {
-        x: "20%"
-      },
-      0
-    );
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: heroSection,
-        start: "top top",
-        end: "bottom 90%",
-        // markers: false,
-        scrub: true
-      },
-      defaults: {
-        duration: 1,
-        ease: "power1.out"
-      }
-    }).fromTo(heroText, { yPercent: 0 }, { yPercent: -120, duration: 0.75 }).fromTo(heroScroll, { opacity: 1 }, { opacity: 0, duration: 0.5 }, "<").fromTo(heroLogo, { yPercent: 0 }, { yPercent: -120 });
-    const titleSplit = runSplit(titleText, "chars, words, lines");
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: titleSection,
-        start: "top bottom",
-        end: "bottom 20%",
-        scrub: true,
-        markers: false
-      },
-      defaults: {
-        duration: 1,
-        ease: "power1.out"
-      }
-    }).set(homeBgTopWrap, { opacity: 1 }).fromTo(
-      titleSplit.chars,
-      { opacity: 0, x: "1rem" },
-      { opacity: 1, x: "0rem", duration: 0.5, stagger: { from: "start", each: 0.015 } }
-    ).fromTo(imgLady, { opacity: 0 }, { opacity: 1, duration: 0.1 }, "<.5").fromTo(imgRightGuy, { opacity: 0 }, { opacity: 1, duration: 0.2 }, "<").fromTo(
-      imgLady,
-      { rotateZ: -35, yPercent: 0, xPercent: 0 },
-      { rotateZ: 15, yPercent: -10, xPercent: -25 },
-      "<"
-    ).fromTo(
-      imgShoe,
-      { rotateZ: 0, yPercent: 5, xPercent: 0 },
-      { rotateZ: 45, yPercent: 0, xPercent: -7 },
-      "<"
-    ).fromTo(imgRightGuy, { xPercent: 50 }, { xPercent: 0, duration: 0.5 }, "<").to(homeBgTopWrap, { opacity: 0, duration: 0.1 }, "<.3");
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: detailsSection,
-        start: "top bottom",
-        end: "bottom bottom",
-        scrub: true,
-        markers: false
-      },
-      defaults: {
-        duration: 1,
-        ease: "power1.out"
-      }
-    }).fromTo(detailsCards[0], { xPercent: 30 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[1], { xPercent: -50 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[2], { xPercent: 80 }, { xPercent: 0, duration: 1 }, "<").to(backgroundOverlay, { opacity: 0.8, duration: 0.5 }, "<.2");
-    detailsHeadings.forEach((item, index) => {
-      const headingSplit = runSplit(item, "words, lines");
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: item,
-          start: "top 90%",
-          end: "center top",
-          scrub: true,
-          markers: false
-        },
-        defaults: {
-          duration: 1,
-          ease: "none"
-        }
-      }).fromTo(
-        headingSplit.words,
-        { opacity: 0, yPercent: 25 },
-        { opacity: 1, yPercent: 0, duration: 0.5, stagger: { from: "start", each: 0.1 } }
-      ).fromTo(
-        headingSplit.lines,
-        { opacity: 1 },
-        { opacity: 0, duration: 0.5, delay: 1, stagger: { from: "start", each: 0.1 } }
-      );
-    });
-    const artistTL = gsap.timeline({
-      scrollTrigger: {
-        trigger: artistsSection,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        markers: false
-      },
-      defaults: {
-        duration: 1,
-        ease: "none"
-      }
-    });
-    artistTL.set(artistItems[0], { clipPath: clipDirections.full });
-    artistItems.forEach((item, index) => {
-      if (index !== 0) {
-        artistTL.fromTo(
-          item,
-          { clipPath: clipDirections.bottom },
-          { clipPath: clipDirections.full },
-          "<.025"
+        let windowWidth = window.innerWidth;
+        window.addEventListener("resize", function() {
+          if (window.innerWidth !== windowWidth) {
+            windowWidth = window.innerWidth;
+            calculateFrameTransform();
+            homeScroll();
+          }
+        });
+        let scrollArrowTL = gsap.timeline({
+          repeat: -1
+        }).fromTo(
+          heroScrollArrow,
+          {
+            y: "0rem"
+          },
+          {
+            y: "3rem;",
+            duration: 0.8
+          }
+        ).to(heroScrollArrow, {
+          y: "0rem",
+          duration: 0.8
+        });
+        let tlMain = gsap.timeline({
+          scrollTrigger: {
+            trigger: homeScrollWrap,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.5
+          },
+          defaults: {
+            duration: 1,
+            ease: "none"
+          }
+        }).fromTo(
+          imgFrames,
+          {
+            y: "0px"
+          },
+          {
+            y: frameTransform
+          }
+        ).fromTo(
+          [imgBottom, imgLeft, imgRight, imgLeftGuy],
+          {
+            y: "0vh"
+          },
+          {
+            y: "-10vh"
+          },
+          0
+        ).to(
+          imgLeft,
+          {
+            x: "-20%"
+          },
+          0
+        ).to(
+          imgLeftGuy,
+          {
+            x: "-5%"
+          },
+          0
+        ).to(
+          imgRight,
+          {
+            x: "20%"
+          },
+          0
         );
-      }
-      if (index !== artistItems.length - 1) {
-        artistTL.to(item, { clipPath: clipDirections.top, delay: index === 0 ? 0.5 : 1.5 }, "<");
-      }
-    });
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: taglineSection,
-        start: "top bottom",
-        end: "bottom 40%",
-        scrub: true,
-        markers: false
-      },
-      defaults: {
-        duration: 1,
-        ease: "power1.out"
-      }
-    });
-    taglineItems.forEach((item, index) => {
-      const headingSplit = runSplit(item, "chars, lines");
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: item,
-          start: "top 90%",
-          end: "top top",
-          scrub: true,
-          markers: false
-        },
-        defaults: {
-          duration: 1,
-          ease: "none"
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: heroSection,
+            start: "top top",
+            end: "bottom 90%",
+            // markers: false,
+            scrub: true
+          },
+          defaults: {
+            duration: 1,
+            ease: "power1.out"
+          }
+        }).fromTo(heroText, { yPercent: 0 }, { yPercent: -120, duration: 0.75 }).fromTo(heroScroll, { opacity: 1 }, { opacity: 0, duration: 0.5 }, "<").fromTo(heroLogo, { yPercent: 0 }, { yPercent: -120 });
+        const titleSplit = runSplit(titleText, "chars, words, lines");
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: titleSection,
+            start: "top bottom",
+            end: "bottom 20%",
+            scrub: true,
+            markers: false
+          },
+          defaults: {
+            duration: 1,
+            ease: "power1.out"
+          }
+        }).set(homeBgTopWrap, { opacity: 1 }).fromTo(
+          titleSplit.chars,
+          { opacity: 0, x: "1rem" },
+          { opacity: 1, x: "0rem", duration: 0.5, stagger: { from: "start", each: 0.015 } }
+        ).fromTo(imgLady, { opacity: 0 }, { opacity: 1, duration: 0.1 }, "<.5").fromTo(imgRightGuy, { opacity: 0 }, { opacity: 1, duration: 0.2 }, "<").fromTo(
+          imgLady,
+          { rotateZ: -35, yPercent: 0, xPercent: 0 },
+          { rotateZ: 15, yPercent: -10, xPercent: -25 },
+          "<"
+        ).fromTo(
+          imgShoe,
+          { rotateZ: 0, yPercent: 5, xPercent: 0 },
+          { rotateZ: 45, yPercent: 0, xPercent: -7 },
+          "<"
+        ).fromTo(imgRightGuy, { xPercent: 50 }, { xPercent: 0, duration: 0.5 }, "<").to(homeBgTopWrap, { opacity: 0, duration: 0.1 }, "<.3");
+        const detailsTL = gsap.timeline({
+          scrollTrigger: {
+            trigger: detailsSection,
+            start: "top bottom",
+            end: "bottom bottom",
+            scrub: true,
+            markers: false
+          },
+          defaults: {
+            duration: 1,
+            ease: "power1.out"
+          }
+        });
+        if (!isMobile) {
+          detailsTL.fromTo(detailsCards[0], { xPercent: 30 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[1], { xPercent: -50 }, { xPercent: 0, duration: 1 }, "<").fromTo(detailsCards[2], { xPercent: 80 }, { xPercent: 0, duration: 1 }, "<");
+        } else {
+          detailsTL.fromTo(detailsCards[0], { x: "2rem" }, { x: "0rem", duration: 1 }, "<").fromTo(detailsCards[1], { x: "2rem" }, { x: "0rem", duration: 1 }, "<").fromTo(detailsCards[2], { x: "2rem" }, { x: "0rem", duration: 1 }, "<");
         }
-      }).fromTo(
-        headingSplit.chars,
-        { opacity: 0, yPercent: 10, x: "1.5rem" },
-        { opacity: 1, yPercent: 0, x: "0rem", stagger: { from: "start", each: 0.1 } }
-      ).fromTo(item, { opacity: 1 }, { opacity: 0, duration: 0.5, delay: 1 });
-    });
+        detailsTL.to(backgroundOverlay, { opacity: 0.8, duration: 0.5 }, "<.2");
+        detailsHeadings.forEach((item, index) => {
+          const headingSplit = runSplit(item, "words, lines");
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: item,
+              start: "top 90%",
+              end: "center top",
+              scrub: true,
+              markers: false
+            },
+            defaults: {
+              duration: 1,
+              ease: "none"
+            }
+          }).fromTo(
+            headingSplit.words,
+            { opacity: 0, yPercent: 25 },
+            { opacity: 1, yPercent: 0, duration: 0.5, stagger: { from: "start", each: 0.1 } }
+          ).fromTo(
+            headingSplit.lines,
+            { opacity: 1 },
+            { opacity: 0, duration: 0.5, delay: 1, stagger: { from: "start", each: 0.1 } }
+          );
+        });
+        const artistTL = gsap.timeline({
+          scrollTrigger: {
+            trigger: artistsSection,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true,
+            markers: false
+          },
+          defaults: {
+            duration: 1,
+            ease: "none"
+          }
+        });
+        artistTL.set(artistItems[0], { clipPath: clipDirections.full });
+        artistItems.forEach((item, index) => {
+          if (index !== 0) {
+            artistTL.fromTo(
+              item,
+              { clipPath: clipDirections.bottom },
+              { clipPath: clipDirections.full },
+              "<.025"
+            );
+          }
+          if (index !== artistItems.length - 1) {
+            artistTL.to(item, { clipPath: clipDirections.top, delay: index === 0 ? 0.5 : 1.5 }, "<");
+          }
+        });
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: taglineSection,
+            start: "top bottom",
+            end: "bottom 40%",
+            scrub: true,
+            markers: false
+          },
+          defaults: {
+            duration: 1,
+            ease: "power1.out"
+          }
+        });
+        taglineItems.forEach((item, index) => {
+          const headingSplit = runSplit(item, "chars, lines");
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: item,
+              start: "top 90%",
+              end: "top top",
+              scrub: true,
+              markers: false
+            },
+            defaults: {
+              duration: 1,
+              ease: "none"
+            }
+          }).fromTo(
+            headingSplit.chars,
+            { opacity: 0, yPercent: 10, x: "1.5rem" },
+            { opacity: 1, yPercent: 0, x: "0rem", stagger: { from: "start", each: 0.1 } }
+          ).fromTo(item, { opacity: 1 }, { opacity: 0, duration: 0.5, delay: 1 });
+        });
+      }
+    );
   };
 
   // src/interactions/pageLoader.js
