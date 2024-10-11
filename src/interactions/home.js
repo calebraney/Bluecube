@@ -75,15 +75,10 @@ export const homeScroll = function () {
         // console.log(frameHeight, viewportHeight, frameTransform);
       };
       calculateFrameTransform();
-      let windowWidth = window.innerWidth;
-      window.addEventListener('resize', function () {
-        if (window.innerWidth !== windowWidth) {
-          windowWidth = window.innerWidth;
-          //input code you want run after the browser width is changed
-          calculateFrameTransform();
-          homeScroll();
-        }
-      });
+      //on mobile
+      if (isMobile) {
+        frameTransform === '50lvh';
+      }
 
       //home scroll arrow loop
 
@@ -122,7 +117,7 @@ export const homeScroll = function () {
         .fromTo(
           imgFrames,
           {
-            y: '0px',
+            y: '0lvh',
           },
           {
             y: frameTransform,
