@@ -30,7 +30,7 @@ const heroScroll = document.querySelector('.home_hero_scroll');
 const heroScrollArrow = document.querySelector('.home_hero_arrow');
 const titleText = document.querySelector('.home_title_text');
 const detailsCards = gsap.utils.toArray('.home-details_card');
-const detailsHeadings = gsap.utils.toArray('.home-details_heading');
+const detailsHeadings = gsap.utils.toArray('.home-details_heading, .home_artists_heading');
 const artistItems = gsap.utils.toArray('.home_artists_item');
 const taglineItems = gsap.utils.toArray('.home_tagline_text');
 
@@ -191,7 +191,7 @@ export const homeScroll = function () {
             start: 'top bottom',
             end: 'bottom 20%',
             scrub: true,
-            markers: false,
+            markers: true,
           },
           defaults: {
             duration: 1,
@@ -204,12 +204,13 @@ export const homeScroll = function () {
           { opacity: 0, x: '1rem' },
           { opacity: 1, x: '0rem', duration: 0.5, stagger: { from: 'start', each: 0.015 } }
         )
+        .fromTo(titleText, { yPercent: 0 }, { yPercent: 25, duration: 1 }, '<')
         .fromTo(imgLady, { opacity: 0 }, { opacity: 1, duration: 0.1 }, '<.5')
         .fromTo(imgRightGuy, { opacity: 0 }, { opacity: 1, duration: 0.2 }, '<')
         .fromTo(
           imgLady,
           { rotateZ: -35, yPercent: 0, xPercent: 0 },
-          { rotateZ: 15, yPercent: -10, xPercent: -25 },
+          { rotateZ: 10, yPercent: -10, xPercent: -20 },
           '<'
         )
         .fromTo(
@@ -219,7 +220,7 @@ export const homeScroll = function () {
           '<'
         )
         .fromTo(imgRightGuy, { xPercent: 50 }, { xPercent: 0, duration: 0.5 }, '<')
-        .to(homeBgTopWrap, { opacity: 0, duration: 0.1 }, '<.3');
+        .to(homeBgTopWrap, { opacity: 0, duration: 0.1 }, '<.7');
 
       // details panel
       const detailsTL = gsap.timeline({
