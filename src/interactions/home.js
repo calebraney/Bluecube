@@ -191,7 +191,7 @@ export const homeScroll = function () {
             start: 'top bottom',
             end: 'bottom 20%',
             scrub: true,
-            markers: true,
+            markers: false,
           },
           defaults: {
             duration: 1,
