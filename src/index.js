@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // if no password element exists animate the header in and return the function
     if (!passComponent || !passWrap || !passInput || !passButton) {
-      loadTL.play();
+      // loadTL.play();
       return;
     }
 
@@ -324,9 +324,9 @@ document.addEventListener('DOMContentLoaded', function () {
     worksItems.forEach((item) => {
       //get the lightbox within the works item
       const lightbox = item.querySelector(LIGHTBOX_COMPONENT);
-      if (!lightbox) return;
-      //get other lightbox elements
       const lightboxTrigger = item.querySelector(LIGHTBOX_TRIGGER);
+      if (!lightbox || !lightboxTrigger) return;
+      //get other lightbox elements
       const videoWrap = item.querySelector(LIGHTBOX_VID_WRAP);
       const video = item.querySelector(LIGHTBOX_VID);
       let player = false;
