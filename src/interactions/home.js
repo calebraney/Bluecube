@@ -129,7 +129,7 @@ export const homeScroll = function () {
             y: '0vh',
           },
           {
-            y: '-10vh',
+            y: isMobile ? '5vh' : '-10vh',
           },
           0
         )
